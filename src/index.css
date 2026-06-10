@@ -1,0 +1,73 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+:root {
+  --color-bg-base: #F6F8FA;
+  --color-bg-surface: #FFFFFF;
+  --color-bg-elevated: #F0F2F5;
+  --color-border: #D0D7DE;
+  --color-accent-green: #3FB950;
+  --color-accent-amber: #D29922;
+  --color-accent-blue: #388BFD;
+  --color-accent-red: #F85149;
+  --color-text-primary: #1F2328;
+  --color-text-secondary: #656D76;
+  --color-text-muted: #8C959F;
+  --shadow-card: 0 1px 3px rgba(0, 0, 0, 0.08), 0 1px 2px rgba(0, 0, 0, 0.06);
+  --shadow-elevated: 0 4px 16px rgba(0, 0, 0, 0.1);
+}
+
+.dark {
+  --color-bg-base: #0D1117;
+  --color-bg-surface: #161B22;
+  --color-bg-elevated: #1C2128;
+  --color-border: #30363D;
+  --color-text-primary: #E6EDF3;
+  --color-text-secondary: #8B949E;
+  --color-text-muted: #484F58;
+  --shadow-card: 0 1px 3px rgba(0, 0, 0, 0.4), 0 1px 2px rgba(0, 0, 0, 0.24);
+  --shadow-elevated: 0 4px 16px rgba(0, 0, 0, 0.5);
+}
+
+* {
+  margin: 0;
+  padding: 0;
+  box-sizing: border-box;
+}
+
+body {
+  font-family: 'Inter', sans-serif;
+  background-color: var(--color-bg-base);
+  color: var(--color-text-primary);
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+  transition: background-color 0.2s, color 0.2s;
+}
+
+::-webkit-scrollbar {
+  width: 6px;
+  height: 6px;
+}
+
+::-webkit-scrollbar-track {
+  background: var(--color-bg-base);
+}
+
+::-webkit-scrollbar-thumb {
+  background: var(--color-border);
+  border-radius: 3px;
+}
+
+::-webkit-scrollbar-thumb:hover {
+  background: var(--color-text-muted);
+}
+
+@layer components {
+  .card {
+    @apply bg-bg-surface border border-border rounded-card shadow-card p-4;
+  }
+  .card-elevated {
+    @apply bg-bg-elevated border border-border rounded-card shadow-elevated p-4;
+  }
+}
