@@ -1,21 +1,34 @@
 import { NavLink } from 'react-router-dom';
-import { LayoutDashboard, Activity, Droplets, Scale, Bell, Settings, Leaf } from 'lucide-react';
+import {
+  LayoutDashboard,
+  Activity,
+  Droplets,
+  Scale,
+  Bell,
+  Settings,
+  Users,
+} from 'lucide-react';
 import { useAppStore } from '../../store/appStore';
+import { useAuth } from '../../context/AuthContext';
 import clsx from 'clsx';
 
 const navItems = [
-  { to: '/', label: 'Overview', icon: LayoutDashboard },
-  { to: '/monitoring', label: 'Monitoring', icon: Activity },
-  { to: '/irrigation', label: 'Irrigation', icon: Droplets },
-  { to: '/balance', label: 'Balance', icon: Scale },
-  { to: '/events', label: 'Events', icon: Bell },
-  { to: '/settings', label: 'Settings', icon: Settings },
+  { to: '/', label: 'Dashboard', icon: LayoutDashboard, adminOnly: false },
+  { to: '/monitoring', label: 'Live Sensors', icon: Activity, adminOnly: false },
+  { to: '/irrigation', label: 'Irrigation', icon: Droplets, adminOnly: false },
+  { to: '/balance', label: 'Water Balance', icon: Scale, adminOnly: false },
+  { to: '/events', label: 'Events', icon: Bell, adminOnly: false },
+  { to: '/users', label: 'User Management', icon: Users, adminOnly: true },
+  { to: '/settings', label: 'Settings', icon: Settings, adminOnly: true },
 ];
 
 export default function Sidebar() {
   const sidebarOpen = useAppStore((s) => s.sidebarOpen);
   const lastTimestamp = useAppStore((s) => s.latestReading.timestamp);
   const apiConnected = !!lastTimestamp;
+  const { isAdmin } = useAuth();
+
+  const visibleItems = navItems.filter((item) => !item.adminOnly || isAdmin);
 
   return (
     <aside
@@ -24,15 +37,12 @@ export default function Sidebar() {
         sidebarOpen ? 'w-60' : 'w-16'
       )}
     >
-      <div className="flex items-center gap-3 px-4 h-16 border-b border-border">
-        <Leaf className="w-7 h-7 text-accent-green flex-shrink-0" />
-        {sidebarOpen && (
-          <span className="font-display font-bold text-lg text-text-primary">AgroSense</span>
-        )}
+      <div className="flex items-center justify-center px-3 h-16 border-b border-border">
+        <img src="/logo.png" alt="Azura" className="w-full max-h-12 object-contain" />
       </div>
 
-      <nav className="flex-1 py-4 space-y-1 px-2">
-        {navItems.map(({ to, label, icon: Icon }) => (
+      <nav className="flex-1 py-4 space-y-1 px-2 overflow-y-auto">
+        {visibleItems.map(({ to, label, icon: Icon }) => (
           <NavLink
             key={to}
             to={to}
