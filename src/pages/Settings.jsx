@@ -1,7 +1,7 @@
 import { useState } from 'react';
 import { useAuth } from '../context/AuthContext';
 import { supabase } from '../lib/supabase';
-import { UserCircle, Check, AlertCircle } from 'lucide-react';
+import { UserCircle, Check, AlertCircle, Cpu, Wifi, Database, Leaf, Server, Shield } from 'lucide-react';
 
 export default function Settings() {
   const { user, profile } = useAuth();
@@ -108,27 +108,91 @@ export default function Settings() {
         </form>
       </section>
 
-      <section className="card mb-6">
-        <h3 className="font-display font-semibold mb-4">Connection Settings</h3>
-        <div className="space-y-3">
-          <div>
-            <label className="text-xs text-text-muted">Node-RED API Base URL</label>
-            <input
-              type="text"
-              defaultValue={import.meta.env.VITE_API_BASE_URL || 'http://localhost:1880'}
-              readOnly
-              className="w-full mt-1 px-3 py-1.5 bg-bg-elevated border border-border rounded-btn text-sm font-mono text-text-secondary"
-            />
+      <section className="card overflow-hidden">
+        <div className="relative px-6 py-5 -mx-4 -mt-4 mb-5 bg-gradient-to-br from-accent-green/10 via-bg-elevated to-accent-blue/5 border-b border-border">
+          <div className="flex items-center gap-3">
+            <div className="w-12 h-12 rounded-xl bg-accent-green/15 flex items-center justify-center">
+              <Leaf className="w-6 h-6 text-accent-green" />
+            </div>
+            <div>
+              <h3 className="font-display font-bold text-lg text-text-primary">Azura</h3>
+              <p className="text-xs text-text-secondary">IoT Precision Agriculture Platform</p>
+            </div>
+            <span className="ml-auto text-[10px] px-2.5 py-1 rounded-full bg-accent-green/10 text-accent-green font-semibold tracking-wider uppercase">
+              v1.0.0
+            </span>
           </div>
         </div>
-      </section>
 
-      <section className="card">
-        <h3 className="font-display font-semibold mb-4">About</h3>
-        <div className="text-sm text-text-secondary space-y-1">
-          <p>Azura v1.0.0</p>
-          <p>IoT Precision Agriculture Dashboard</p>
-          <p>Backend: Node-RED + InfluxDB</p>
+        <div className="px-2">
+          <p className="text-sm text-text-secondary leading-relaxed mb-5">
+            Azura is a real-time IoT precision agriculture monitoring and irrigation control system.
+            It provides intelligent water management through sensor-driven automation, helping optimize
+            crop yield while minimizing water waste.
+          </p>
+
+          <div className="grid grid-cols-1 sm:grid-cols-2 gap-3 mb-5">
+            <div className="flex items-start gap-3 p-3 rounded-lg bg-bg-elevated/50 border border-border/50">
+              <Cpu className="w-4 h-4 text-accent-green mt-0.5 flex-shrink-0" />
+              <div>
+                <p className="text-xs font-medium text-text-primary">ESP32 Microcontroller</p>
+                <p className="text-[11px] text-text-muted">Sensor acquisition & MQTT publishing</p>
+              </div>
+            </div>
+            <div className="flex items-start gap-3 p-3 rounded-lg bg-bg-elevated/50 border border-border/50">
+              <Wifi className="w-4 h-4 text-accent-blue mt-0.5 flex-shrink-0" />
+              <div>
+                <p className="text-xs font-medium text-text-primary">MQTT Protocol</p>
+                <p className="text-[11px] text-text-muted">Lightweight real-time messaging</p>
+              </div>
+            </div>
+            <div className="flex items-start gap-3 p-3 rounded-lg bg-bg-elevated/50 border border-border/50">
+              <Server className="w-4 h-4 text-accent-amber mt-0.5 flex-shrink-0" />
+              <div>
+                <p className="text-xs font-medium text-text-primary">Node-RED Backend</p>
+                <p className="text-[11px] text-text-muted">Flow-based processing & REST API</p>
+              </div>
+            </div>
+            <div className="flex items-start gap-3 p-3 rounded-lg bg-bg-elevated/50 border border-border/50">
+              <Database className="w-4 h-4 text-purple-400 mt-0.5 flex-shrink-0" />
+              <div>
+                <p className="text-xs font-medium text-text-primary">InfluxDB</p>
+                <p className="text-[11px] text-text-muted">Time-series data storage</p>
+              </div>
+            </div>
+            <div className="flex items-start gap-3 p-3 rounded-lg bg-bg-elevated/50 border border-border/50">
+              <Shield className="w-4 h-4 text-red-400 mt-0.5 flex-shrink-0" />
+              <div>
+                <p className="text-xs font-medium text-text-primary">Supabase Auth</p>
+                <p className="text-[11px] text-text-muted">Role-based access control (RBAC)</p>
+              </div>
+            </div>
+            <div className="flex items-start gap-3 p-3 rounded-lg bg-bg-elevated/50 border border-border/50">
+              <Leaf className="w-4 h-4 text-accent-green mt-0.5 flex-shrink-0" />
+              <div>
+                <p className="text-xs font-medium text-text-primary">React + Vite</p>
+                <p className="text-[11px] text-text-muted">Modern dashboard with Tailwind CSS</p>
+              </div>
+            </div>
+          </div>
+
+          <div className="border-t border-border pt-4">
+            <h4 className="text-xs font-semibold text-text-muted uppercase tracking-wider mb-3">Monitored Parameters</h4>
+            <div className="flex flex-wrap gap-2">
+              {['Substrate Weight', 'EC', 'pH', 'Soil Moisture', 'Temperature', 'Water Input', 'Drainage', 'Plant Uptake'].map((param) => (
+                <span key={param} className="text-[11px] px-2.5 py-1 rounded-full bg-bg-elevated border border-border/50 text-text-secondary">
+                  {param}
+                </span>
+              ))}
+            </div>
+          </div>
+
+          <div className="border-t border-border mt-4 pt-4">
+            <div className="flex items-center justify-between text-[11px] text-text-muted">
+              <span>PFE Project — Master S10</span>
+              <span>Hosted on OVH VPS</span>
+            </div>
+          </div>
         </div>
       </section>
     </div>

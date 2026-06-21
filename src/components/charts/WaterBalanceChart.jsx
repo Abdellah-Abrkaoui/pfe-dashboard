@@ -62,12 +62,11 @@ export default function WaterBalanceChart() {
         data: history.map((d) => [d.timestamp, d.water_used_mL]),
       },
     ],
-    dataZoom: [{ type: 'inside', start: 0, end: 100 }],
   };
 
   if (history.length === 0) {
     return <div className="flex items-center justify-center h-[280px] text-text-muted text-sm">Waiting for data...</div>;
   }
 
-  return <ReactECharts option={option} style={{ height: '100%', minHeight: 320 }} />;
+  return <ReactECharts option={option} style={{ height: 320 }} />;
 }

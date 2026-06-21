@@ -88,12 +88,11 @@ export default function PHChart({ showGauge = false }) {
       lineStyle: { width: 2 },
       data: history.map((d) => [d.timestamp, d.ph]),
     }],
-    dataZoom: [{ type: 'inside', start: 0, end: 100 }],
   };
 
   if (history.length === 0) {
     return <div className="flex items-center justify-center h-[280px] text-text-muted text-sm">Waiting for data...</div>;
   }
 
-  return <ReactECharts option={option} style={{ height: '100%', minHeight: 280 }} />;
+  return <ReactECharts option={option} style={{ height: 280 }} />;
 }

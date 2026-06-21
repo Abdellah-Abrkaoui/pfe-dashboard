@@ -6,17 +6,21 @@ import { Download, ChevronLeft, ChevronRight } from 'lucide-react';
 import clsx from 'clsx';
 
 const ACTION_TYPES = {
-  DAY_STARTED: { icon: '🌅', color: 'text-accent-blue' },
-  START_IRRIGATION: { icon: '💧', color: 'text-accent-green' },
-  STOP_DAY: { icon: '🌙', color: 'text-accent-amber' },
-  IRRIGATION_START: { icon: '💧', color: 'text-accent-green' },
-  IRRIGATION_END: { icon: '✓', color: 'text-accent-green' },
-  DRAIN_START: { icon: '🔽', color: 'text-accent-amber' },
-  DRAIN_END: { icon: '✓', color: 'text-accent-amber' },
-  ALERT: { icon: '⚠️', color: 'text-accent-red' },
+  DAY_STARTED: { icon: '🌅', color: 'text-accent-blue', label: 'Day Started' },
+  START_IRRIGATION: { icon: '💧', color: 'text-accent-green', label: 'Irrigation Started' },
+  STOP_IRRIGATION: { icon: '✓', color: 'text-accent-green', label: 'Irrigation Stopped' },
+  STOP_DAY: { icon: '🌙', color: 'text-accent-amber', label: 'Day Stopped' },
+  IRRIGATION_START: { icon: '💧', color: 'text-accent-green', label: 'Irrigation Start' },
+  IRRIGATION_END: { icon: '✓', color: 'text-accent-green', label: 'Irrigation End' },
+  DRAIN_START: { icon: '🔽', color: 'text-accent-amber', label: 'Drain Start' },
+  DRAIN_END: { icon: '✓', color: 'text-accent-amber', label: 'Drain End' },
+  REPOS_START: { icon: '⏸️', color: 'text-accent-blue', label: 'Repos Start' },
+  REPOS_DONE: { icon: '▶️', color: 'text-accent-blue', label: 'Repos Done' },
+  IRRIGATION_DONE: { icon: '✅', color: 'text-accent-green', label: 'Irrigation Done' },
+  ALERT: { icon: '⚠️', color: 'text-accent-red', label: 'Alert' },
 };
 
-const filters = ['All', 'START_IRRIGATION', 'STOP_DAY', 'DAY_STARTED'];
+const filters = ['All', 'DAY_STARTED', 'START_IRRIGATION', 'STOP_DAY'];
 
 const PAGE_SIZE = 20;
 
@@ -36,7 +40,7 @@ export default function EventsLogs() {
 
   const filtered = filter === 'All'
     ? sorted
-    : sorted.filter((e) => e.action_str === filter);
+    : sorted.filter((e) => e.action === filter);
 
   const totalPages = Math.ceil(filtered.length / PAGE_SIZE);
   const paginated = filtered.slice(page * PAGE_SIZE, (page + 1) * PAGE_SIZE);
@@ -47,10 +51,8 @@ export default function EventsLogs() {
   };
 
   const exportCSV = () => {
-    const csv = ['Timestamp,Action,Tour,Duration(min),EC(mS/cm),Drainage(%),Repos(min),Weight(g)']
-      .concat(filtered.map((e) =>
-        `${e._time},${e.action_str},${e.tour},${e.duree_min},${e.ec_mscm},${e.pct_drainage},${e.repos_min},${e.weight_g}`
-      ))
+    const csv = ['Timestamp,Action']
+      .concat(filtered.map((e) => `${e._time},${e.action}`))
       .join('\n');
     const blob = new Blob([csv], { type: 'text/csv' });
     const url = URL.createObjectURL(blob);
@@ -76,7 +78,7 @@ export default function EventsLogs() {
                   : 'text-text-secondary hover:text-text-primary'
               )}
             >
-              {f}
+              {f === 'All' ? 'All' : (ACTION_TYPES[f]?.label || f)}
             </button>
           ))}
         </div>
@@ -92,21 +94,14 @@ export default function EventsLogs() {
       <div className="card">
         <div className="space-y-0">
           {paginated.map((event, i) => {
-            const meta = ACTION_TYPES[event.action_str] || { icon: '●', color: 'text-text-primary' };
+            const meta = ACTION_TYPES[event.action] || { icon: '●', color: 'text-text-primary', label: event.action };
             return (
               <div key={i} className="flex items-start gap-3 py-3 border-b border-border/50 last:border-0">
                 <span className="text-base mt-0.5">{meta.icon}</span>
                 <div className="flex-1 min-w-0">
                   <p className={clsx('text-sm font-medium', meta.color)}>
-                    {event.action_str}
-                    {event.tour > 0 && ` — Tour #${event.tour}`}
+                    {meta.label}
                   </p>
-                  <div className="flex flex-wrap gap-3 text-xs text-text-muted mt-1">
-                    {event.duree_min > 0 && <span>{event.duree_min} min</span>}
-                    {event.ec_mscm > 0 && <span>EC: {event.ec_mscm}</span>}
-                    {event.pct_drainage > 0 && <span>Drain: {event.pct_drainage}%</span>}
-                    {event.weight_g > 0 && <span>Weight: {event.weight_g}g</span>}
-                  </div>
                   <p className="text-xs text-text-muted mt-0.5 font-mono">
                     {formatDate(event._time)}
                   </p>
@@ -119,7 +114,6 @@ export default function EventsLogs() {
           )}
         </div>
 
-        {/* Pagination */}
         {totalPages > 1 && (
           <div className="flex items-center justify-between pt-4 mt-4 border-t border-border">
             <span className="text-xs text-text-muted">

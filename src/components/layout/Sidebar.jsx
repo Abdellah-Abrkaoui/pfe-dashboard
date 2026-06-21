@@ -37,8 +37,8 @@ export default function Sidebar() {
         sidebarOpen ? 'w-60' : 'w-16'
       )}
     >
-      <div className="flex items-center justify-center px-3 h-16 border-b border-border">
-        <img src="/logo.png" alt="Azura" className="w-full max-h-12 object-contain" />
+      <div className="flex items-center justify-center px-3 h-14 border-b border-border">
+        <img src="/logo.png" alt="Azura" className="w-full max-h-10 object-contain" />
       </div>
 
       <nav className="flex-1 py-4 space-y-1 px-2 overflow-y-auto">

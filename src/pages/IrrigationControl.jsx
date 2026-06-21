@@ -2,8 +2,28 @@ import { useAppStore } from '../store/appStore';
 import { useSensorData, useTimers } from '../hooks/useSensorData';
 import PumpToggle from '../components/ui/PumpToggle';
 import AlertBanner from '../components/ui/AlertBanner';
-import { Download } from 'lucide-react';
+import { Download, Clock, Droplets, Wind } from 'lucide-react';
 import clsx from 'clsx';
+
+function formatDuration(seconds) {
+  if (!seconds || seconds <= 0) return '—';
+  const m = Math.floor(seconds / 60);
+  const s = seconds % 60;
+  if (m === 0) return `${s}s`;
+  return s > 0 ? `${m}m ${s}s` : `${m}m`;
+}
+
+function formatTime(timestamp) {
+  if (!timestamp) return '—';
+  const d = new Date(timestamp);
+  return d.toLocaleString('sv-SE', {
+    month: '2-digit',
+    day: '2-digit',
+    hour: '2-digit',
+    minute: '2-digit',
+    second: '2-digit',
+  });
+}
 
 export default function IrrigationControl() {
   useSensorData();
@@ -89,8 +109,16 @@ export default function IrrigationControl() {
       </div>
 
       <div className="card">
-        <div className="flex items-center justify-between mb-4">
-          <h3 className="font-display font-semibold">Recent Timers</h3>
+        <div className="flex items-center justify-between mb-5">
+          <div className="flex items-center gap-3">
+            <div className="w-9 h-9 rounded-lg bg-accent-blue/10 flex items-center justify-center">
+              <Clock className="w-4.5 h-4.5 text-accent-blue" />
+            </div>
+            <div>
+              <h3 className="font-display font-semibold text-text-primary">Recent Timers</h3>
+              <p className="text-[11px] text-text-muted">{sortedTimers.length} sessions recorded</p>
+            </div>
+          </div>
           <button
             onClick={() => {
               const csv = ['Timestamp,Tour,Type,Elapsed(s),Total(s),Remaining(s),Progress(%)']
@@ -109,41 +137,109 @@ export default function IrrigationControl() {
             className="flex items-center gap-2 px-3 py-1.5 text-xs font-medium text-text-secondary hover:text-text-primary border border-border rounded-btn hover:bg-bg-elevated transition-colors"
           >
             <Download className="w-3.5 h-3.5" />
-            Export CSV
+            Export
           </button>
         </div>
         <div className="overflow-x-auto">
           <table className="w-full text-sm">
             <thead>
-              <tr className="text-text-secondary border-b border-border">
-                <th className="text-left py-2 px-3 font-medium">Tour #</th>
-                <th className="text-left py-2 px-3 font-medium">Type</th>
-                <th className="text-left py-2 px-3 font-medium">Elapsed</th>
-                <th className="text-left py-2 px-3 font-medium">Total</th>
-                <th className="text-left py-2 px-3 font-medium">Status</th>
+              <tr className="border-b border-border">
+                <th className="text-left py-2.5 px-3 text-[11px] font-semibold text-text-muted uppercase tracking-wider">Tour</th>
+                <th className="text-left py-2.5 px-3 text-[11px] font-semibold text-text-muted uppercase tracking-wider">Type</th>
+                <th className="text-left py-2.5 px-3 text-[11px] font-semibold text-text-muted uppercase tracking-wider">Time</th>
+                <th className="text-left py-2.5 px-3 text-[11px] font-semibold text-text-muted uppercase tracking-wider">Duration</th>
+                <th className="text-left py-2.5 px-3 text-[11px] font-semibold text-text-muted uppercase tracking-wider">Progress</th>
+                <th className="text-left py-2.5 px-3 text-[11px] font-semibold text-text-muted uppercase tracking-wider">Status</th>
               </tr>
             </thead>
             <tbody>
-              {sortedTimers.slice(0, 30).map((timer, i) => (
-                <tr key={i} className="border-b border-border/50 hover:bg-bg-elevated/50">
-                  <td className="py-2 px-3 font-mono">#{timer.tour}</td>
-                  <td className="py-2 px-3">{timer.type_str}</td>
-                  <td className="py-2 px-3 font-mono">{timer.elapsed_s}s</td>
-                  <td className="py-2 px-3 font-mono">{timer.total_s}s</td>
-                  <td className="py-2 px-3">
-                    <span className={clsx(
-                      'inline-flex items-center gap-1.5 text-xs',
-                      timer.remaining_s > 0 ? 'text-accent-green' : 'text-text-secondary'
-                    )}>
+              {sortedTimers.slice(0, 30).map((timer, i) => {
+                const isActive = timer.remaining_s > 0;
+                const isIrrigation = timer.type_str === 'irrigation';
+                return (
+                  <tr
+                    key={i}
+                    className={clsx(
+                      'border-b border-border/30 transition-colors',
+                      isActive ? 'bg-accent-green/[0.03]' : 'hover:bg-bg-elevated/50'
+                    )}
+                  >
+                    <td className="py-3 px-3">
+                      <span className="font-mono font-semibold text-text-primary">#{timer.tour}</span>
+                    </td>
+                    <td className="py-3 px-3">
                       <span className={clsx(
-                        'w-1.5 h-1.5 rounded-full',
-                        timer.remaining_s > 0 ? 'bg-accent-green' : 'bg-text-muted'
-                      )} />
-                      {timer.remaining_s > 0 ? 'Active' : 'Complete'}
-                    </span>
+                        'inline-flex items-center gap-1.5 text-xs px-2 py-1 rounded-md font-medium',
+                        isIrrigation
+                          ? 'bg-accent-green/10 text-accent-green'
+                          : 'bg-accent-amber/10 text-accent-amber'
+                      )}>
+                        {isIrrigation
+                          ? <Droplets className="w-3 h-3" />
+                          : <Wind className="w-3 h-3" />
+                        }
+                        {timer.type_str}
+                      </span>
+                    </td>
+                    <td className="py-3 px-3">
+                      <span className="font-mono text-xs text-text-secondary">
+                        {formatTime(timer._time)}
+                      </span>
+                    </td>
+                    <td className="py-3 px-3">
+                      <div className="flex flex-col">
+                        <span className="font-mono text-text-primary text-xs font-medium">
+                          {formatDuration(timer.total_s)}
+                        </span>
+                        {isActive && (
+                          <span className="text-[10px] text-accent-blue font-mono">
+                            {formatDuration(timer.remaining_s)} left
+                          </span>
+                        )}
+                      </div>
+                    </td>
+                    <td className="py-3 px-3">
+                      <div className="flex items-center gap-2">
+                        <div className="flex-1 h-1.5 bg-bg-elevated rounded-full overflow-hidden min-w-[60px]">
+                          <div
+                            className={clsx(
+                              'h-full rounded-full transition-all duration-300',
+                              isActive ? 'bg-accent-green' : 'bg-text-muted/40'
+                            )}
+                            style={{ width: `${timer.pct_done}%` }}
+                          />
+                        </div>
+                        <span className="text-[10px] font-mono text-text-muted w-8 text-right">
+                          {timer.pct_done}%
+                        </span>
+                      </div>
+                    </td>
+                    <td className="py-3 px-3">
+                      {isActive ? (
+                        <span className="inline-flex items-center gap-1.5 text-xs font-medium text-accent-green">
+                          <span className="relative flex h-2 w-2">
+                            <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-accent-green opacity-75"></span>
+                            <span className="relative inline-flex rounded-full h-2 w-2 bg-accent-green"></span>
+                          </span>
+                          Active
+                        </span>
+                      ) : (
+                        <span className="inline-flex items-center gap-1.5 text-xs text-text-muted">
+                          <span className="w-2 h-2 rounded-full bg-text-muted/40" />
+                          Complete
+                        </span>
+                      )}
+                    </td>
+                  </tr>
+                );
+              })}
+              {sortedTimers.length === 0 && (
+                <tr>
+                  <td colSpan={6} className="py-8 text-center text-sm text-text-muted">
+                    No timer data available
                   </td>
                 </tr>
-              ))}
+              )}
             </tbody>
           </table>
         </div>
